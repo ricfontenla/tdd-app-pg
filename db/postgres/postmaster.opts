@@ -1,0 +1,1 @@
+/usr/lib/postgresql/14/bin/postgres "-c" "client_min_messages=warning"

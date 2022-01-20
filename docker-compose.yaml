@@ -1,0 +1,32 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    command: postgres -c 'client_min_messages=warning'
+
+  chrome:
+    image: selenium/standalone-chrome
+    volumes:
+      - /dev/shm:/dev/shm
+
+  web:
+    build: .
+    volumes:
+      - .:/opt/app
+    ports:
+      - 3000:3000
+    tty: true
+    stdin_open: true
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: db
+      HUB_URL: http://chrome:4444/wd/hub
+    depends_on:
+      - db
+      - chrome
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
